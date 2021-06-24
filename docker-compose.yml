@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gogs
+      MYSQL_USER: gogs
+      MYSQL_PASSWORD: gogs
+
+  gogs:
+    image: gogs/gogs:latest
+    volumes:
+      - ./gogs:/data
+    ports:
+      - "222:22"
+      - "3000:3000"
+    depends_on:
+      - mysql
+    links:
+      - mysql
+
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    restart: always
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - /tmp:/var/jenkins_home/secrets/
